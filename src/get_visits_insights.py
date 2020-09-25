@@ -1,9 +1,6 @@
 import sys
-import os
-
 import pandas as pd
 from utils import *
-
 
 
 def get_visits_insights(oauth_token, repo_name):
@@ -11,7 +8,6 @@ def get_visits_insights(oauth_token, repo_name):
     g = Github(oauth_token)
     repo = g.get_repo(repo_name)
     visits_traffic = repo.get_views_traffic()
-    #print(visits_traffic)
     views = visits_traffic['views']
 
     gt_df = []
@@ -22,7 +18,6 @@ def get_visits_insights(oauth_token, repo_name):
     print('Here\'s what we\'ve got today:')
     print(gt_df.to_string())
     return gt_df
-
 
 if __name__ == '__main__':
 
