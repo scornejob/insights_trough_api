@@ -2,35 +2,12 @@ import sys
 import os
 
 import pandas as pd
-from github import Github
 
-
-def get_all_repos(oauth_token, repo_name):
-    """
-    The repo given by the user should be in the list
-    :param repo_name:
-    :param oauth_token:
-    :return:
-    """
-    print('Checking if the user can access the repo...')
-    g = Github(oauth_token)
-    print('\tRunning as ' + g.get_user().name)
-    all_repos = g.get_user().get_repos()
-    all_repos_full_name = []
-    for test in list(all_repos):
-        all_repos_full_name.append(test.full_name)
-    if repo_name in all_repos_full_name:
-        return True
-    else:
-        print('Repo "' + repo_name + '" is not in the list')
-        print('Here\'s a list of all repos I can see:')
-        for each_repo in all_repos:
-            print('\t' + each_repo.full_name)
-        return False
+from utils import *
 
 
 def get_clones_insights(oauth_token, repo_name):
-    print('Getting traffic insights')
+    print('Getting clones insights')
     g = Github(oauth_token)
     repo = g.get_repo(repo_name)
     clones_traffic = repo.get_clones_traffic()
@@ -86,4 +63,4 @@ if __name__ == '__main__':
         my_repo = sys.argv[2]
         if get_all_repos(my_oauth_token, my_repo):
             df = get_clones_insights(my_oauth_token, my_repo)
-            history_clones('../output/traffic.csv', df)
+            history_clones('../output/clones.csv', df)
