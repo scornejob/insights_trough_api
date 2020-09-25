@@ -8,23 +8,22 @@ def get_issues_insights(oauth_token, repo_name):
     g = Github(oauth_token)
     repo = g.get_repo(repo_name)
     issues = repo.get_issues(state='all')
-    print(type(issues))
-    for page in issues:
-        print(page)
-        comments = repo.get_comment()
-    print(comments)
-    for page in comments:
-        print(page)
-    # views = visits_traffic['views']
+    #print(type(issues))
+    data = []
+    for issue in issues:
+        issue_url = issue.url
+        issue_created = issue.created_at
+        issue_closed = issue.closed_at
+        data.append([issue_url, issue_created, issue_closed])
+        comments = issue.get_comments()
+        for comment in comments:
+            #print(comment.created_at)
+            data.append([issue.url, comment.created_at, ])
 
-    # gt_df = []
-    # for entry in views:
-    #     line = [entry.timestamp, entry.uniques, entry.count]
-    #     gt_df.append(line)
-    # gt_df = pd.DataFrame(gt_df, columns=['timestamp', 'uniques', 'count'])
-    # print('Here\'s what we\'ve got today:')
-    # print(gt_df.to_string())
-    # return gt_df
+    df = pd.DataFrame(data, columns=['issue', 'created_at', 'closed_at'])
+
+    print(df)
+    df.to_csv('../output/issues.csv', index=False)
 
 if __name__ == '__main__':
 
