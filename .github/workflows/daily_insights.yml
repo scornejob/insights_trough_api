@@ -38,7 +38,7 @@ jobs:
           echo "getting insights for clones"
           python get_clones_insights.py ${{ secrets.OAUTH }} ${{ secrets.REPO }}
           echo ""
-          echo "Getting insights for visits
+          echo "Getting insights for visits"
           python get_visits_insights.py ${{ secrets.OAUTH }} ${{ secrets.REPO }}
 
 
