@@ -45,8 +45,16 @@ def history_clones(file, ht_df):
         df_file['timestamp'] = df_file['timestamp'].astype(str)
 
         df_file.sort_values('timestamp', inplace=True)
-        df_file.drop_duplicates(subset=['timestamp'], keep='last', inplace=True)
+        print(df_file.to_string())
+        # we can't just drop the first instance: for the first day, we'll loose data.
+        # so keep max value per date
 
+        #df_file.drop_duplicates(subset=['timestamp'], keep='last', inplace=True)
+        df_file = df_file.groupby('timestamp')[['uniques', 'count']].agg(['max']).reset_index()
+
+        df_file.columns = df_file.columns.droplevel(level=1)
+        #print(df_file.to_string())
+        #print(df_file.columns)
         df_file.to_csv(file, index=False)
 
     else:
