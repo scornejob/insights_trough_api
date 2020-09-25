@@ -32,14 +32,8 @@ def get_traffic(oauth_token, repo_name):
     g = Github(oauth_token)
     repo = g.get_repo(repo_name)
     clones_traffic = repo.get_clones_traffic()
-    #print(clones_traffic)
-    count = clones_traffic['count']
-    uniques = clones_traffic['uniques']
     clones = clones_traffic['clones']
-    #print('count: ' + str(count))
-    #print('uniques: ' + str(uniques))
-    #print(clones)
-    #print(type(clones))
+
     df = []
     for entry in clones:
         line = []
@@ -50,8 +44,8 @@ def get_traffic(oauth_token, repo_name):
         #print(line)
         df.append(line)
     df = pd.DataFrame(df, columns=['timestamp', 'uniques', 'count'])
-
-    #print(df)
+    print('Here\'s what we\'ve got today:')
+    print(df.to_string())
     return df
 
 def history_traffic(file, df):
@@ -65,16 +59,15 @@ def history_traffic(file, df):
         # if the file exists, we merge
         print(file +' found, merging')
         df_file = pd.read_csv(file)
-        #df_file['timestamp'] = pd.to_datetime(df_file['timestamp']).dt.date
-        print(df_file.dtypes)
+
         df['timestamp'] = pd.to_datetime(df['timestamp']).dt.date
-        print(df.dtypes)
+
         df_file = pd.concat([df_file, df])
         df_file['timestamp'] = df_file['timestamp'].astype(str)
-        print(df_file)
+
         df_file.sort_values('timestamp', inplace=True)
         df_file.drop_duplicates(subset=['timestamp'], keep='last', inplace=True)
-        print(df_file)
+
         df_file.to_csv(file, index=False)
 
     else:
