@@ -1,16 +1,17 @@
 import sys
 import os
-import datetime as dt
-import pandas as pd
 
+import pandas as pd
 from github import Github
 
+
 def get_all_repos(oauth_token, repo_name):
-    '''
+    """
     The repo given by the user should be in the list
+    :param repo_name:
     :param oauth_token:
     :return:
-    '''
+    """
     print('Checking if the user can access the repo...')
     g = Github(oauth_token)
     print('\tRunning as ' + g.get_user().name)
@@ -27,6 +28,7 @@ def get_all_repos(oauth_token, repo_name):
             print('\t' + each_repo.full_name)
         return False
 
+
 def get_traffic(oauth_token, repo_name):
     print('Getting traffic insights')
     g = Github(oauth_token)
@@ -34,35 +36,31 @@ def get_traffic(oauth_token, repo_name):
     clones_traffic = repo.get_clones_traffic()
     clones = clones_traffic['clones']
 
-    df = []
+    gt_df = []
     for entry in clones:
-        line = []
-        #print(entry)
-        line.append(entry.timestamp)
-        line.append(entry.uniques)
-        line.append(entry.count)
-        #print(line)
-        df.append(line)
-    df = pd.DataFrame(df, columns=['timestamp', 'uniques', 'count'])
+        line = [entry.timestamp, entry.uniques, entry.count]
+        gt_df.append(line)
+    gt_df = pd.DataFrame(gt_df, columns=['timestamp', 'uniques', 'count'])
     print('Here\'s what we\'ve got today:')
-    print(df.to_string())
-    return df
+    print(gt_df.to_string())
+    return gt_df
 
-def history_traffic(file, df):
-    '''
+
+def history_traffic(file, ht_df):
+    """
     here we write a csv file and append the new df
     :param file:
-    :param df:
+    :param ht_df:
     :return:
-    '''
+    """
     if os.path.isfile(file):
         # if the file exists, we merge
-        print(file +' found, merging')
+        print(file + ' found, merging')
         df_file = pd.read_csv(file)
 
-        df['timestamp'] = pd.to_datetime(df['timestamp']).dt.date
+        ht_df['timestamp'] = pd.to_datetime(ht_df['timestamp']).dt.date
 
-        df_file = pd.concat([df_file, df])
+        df_file = pd.concat([df_file, ht_df])
         df_file['timestamp'] = df_file['timestamp'].astype(str)
 
         df_file.sort_values('timestamp', inplace=True)
@@ -73,7 +71,7 @@ def history_traffic(file, df):
     else:
         # otherwise, just dump the df
         print('There is no file to merge, dumping df to ' + file)
-        df.to_csv(file, index=False)
+        ht_df.to_csv(file, index=False)
 
 
 if __name__ == '__main__':
@@ -89,4 +87,3 @@ if __name__ == '__main__':
         if get_all_repos(my_oauth_token, my_repo):
             df = get_traffic(my_oauth_token, my_repo)
             history_traffic('../output/traffic.csv', df)
-
