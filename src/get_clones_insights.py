@@ -29,7 +29,7 @@ def get_all_repos(oauth_token, repo_name):
         return False
 
 
-def get_traffic(oauth_token, repo_name):
+def get_clones_insights(oauth_token, repo_name):
     print('Getting traffic insights')
     g = Github(oauth_token)
     repo = g.get_repo(repo_name)
@@ -46,7 +46,7 @@ def get_traffic(oauth_token, repo_name):
     return gt_df
 
 
-def history_traffic(file, ht_df):
+def history_clones(file, ht_df):
     """
     here we write a csv file and append the new df
     :param file:
@@ -85,5 +85,5 @@ if __name__ == '__main__':
         my_oauth_token = sys.argv[1]
         my_repo = sys.argv[2]
         if get_all_repos(my_oauth_token, my_repo):
-            df = get_traffic(my_oauth_token, my_repo)
-            history_traffic('../output/traffic.csv', df)
+            df = get_clones_insights(my_oauth_token, my_repo)
+            history_clones('../output/traffic.csv', df)
