@@ -1,3 +1,6 @@
+import os
+import pandas as pd
+
 from github import Github
 
 def get_all_repos(oauth_token, repo_name):
@@ -22,3 +25,31 @@ def get_all_repos(oauth_token, repo_name):
         for each_repo in all_repos:
             print('\t' + each_repo.full_name)
         return False
+
+
+def history_clones(file, ht_df):
+    """
+    here we write a csv file and append the new df
+    :param file:
+    :param ht_df:
+    :return:
+    """
+    if os.path.isfile(file):
+        # if the file exists, we merge
+        print(file + ' found, merging')
+        df_file = pd.read_csv(file)
+
+        ht_df['timestamp'] = pd.to_datetime(ht_df['timestamp']).dt.date
+
+        df_file = pd.concat([df_file, ht_df])
+        df_file['timestamp'] = df_file['timestamp'].astype(str)
+
+        df_file.sort_values('timestamp', inplace=True)
+        df_file.drop_duplicates(subset=['timestamp'], keep='last', inplace=True)
+
+        df_file.to_csv(file, index=False)
+
+    else:
+        # otherwise, just dump the df
+        print('There is no file to merge, dumping df to ' + file)
+        ht_df.to_csv(file, index=False)
